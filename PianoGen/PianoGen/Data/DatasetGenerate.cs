@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using AI;
-using System.Drawing;
+﻿using AI;
 using AI.ComputerVision;
+using System;
+using System.Drawing;
+using System.IO;
 
 namespace PianoGen.Data
 {
     public class DatasetGenerate
     {
-        string outDir;
-        const int fr =  256;
-        long time;
+        private readonly string outDir;
+        private const int fr =  256;
+        private long time;
 
 
         /// <summary>
@@ -50,9 +46,9 @@ namespace PianoGen.Data
 
 
             if (!fileInfo.Exists)
+            {
                 throw new Exception("The specified file does not exist!");
-
-            
+            }
 
             if (fileInfo.Extension == ".mp3")
             {
@@ -63,8 +59,9 @@ namespace PianoGen.Data
                 sound = loader.Load(pathToFile);
             }
             else
+            {
                 throw new Exception("unknow format");
-
+            }
 
             time = DateTime.Now.Millisecond;
             len = TSemple * loader.Fd;
@@ -91,7 +88,7 @@ namespace PianoGen.Data
             }
         }
 
-        string NameGen(int i) 
+        private string NameGen(int i) 
         {
             return $"{i}_{time}";
         }

@@ -1,12 +1,5 @@
-﻿using AI;
-using AI.ComputerVision;
-using AI.DSPCore;
-using AI.Statistics;
-using PianoGen.Data;
-using PianoGen.Model;
+﻿using PianoGen.Data;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace PianoGen
@@ -21,8 +14,10 @@ namespace PianoGen
         private void Form1_Load(object sender, EventArgs e)
         {
 
-            DatasetGenerate dataset = new DatasetGenerate("data");
-            dataset.TSemple = 5; // 5 сек. отрывок
+            DatasetGenerate dataset = new DatasetGenerate("data")
+            {
+                TSemple = 5 // 5 сек. отрывок
+            };
             dataset.Add("Forget Me Not - Patrick Patrikios.mp3", DatasetGenerate.SaveInfo.SaveAsMatrix);
 
          //   WavMp3 load = new WavMp3();

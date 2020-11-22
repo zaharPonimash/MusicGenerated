@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AI;
+﻿using AI;
 using AI.Statistics;
+using System;
+using System.Collections.Generic;
 
 namespace PianoGen.Model
 {
@@ -22,7 +19,7 @@ namespace PianoGen.Model
         /// <returns></returns>
         public Vector GetSoundSignalFromSpectrumTimeMatrix(Matrix matrix, int fd, double semp)
         {
-            var spectrumOnetimeStep = Matrix.GetColumns(matrix);
+            Vector[] spectrumOnetimeStep = Matrix.GetColumns(matrix);
 
             //for (int i = 1; i < spectrumOnetimeStep.Length; i++)
             //{
@@ -49,23 +46,23 @@ namespace PianoGen.Model
         /// </summary>
         public Vector SpectrumMagnitud2Signal(Vector x, double duration, int fd)
         {
-            var max = PsychoacousticDecoder(x);
-            var result = new Vector((int)(duration * fd));
-            var t = Vector.Time0(fd, duration).CutAndZero((int)(duration * fd));
+            Dictionary<int, double> max = PsychoacousticDecoder(x);
+            Vector result = new Vector((int)(duration * fd));
+            Vector t = Vector.Time0(fd, duration).CutAndZero((int)(duration * fd));
 
-            foreach (var item in max)
+            foreach (KeyValuePair<int, double> item in max)
             {
                 int i = item.Key;
-                var vec = t.TransformVector(r => item.Value * Sin(r * i / duration));
+                Vector vec = t.TransformVector(r => item.Value * Sin(r * i / duration));
                 result += vec;
             }
 
             double ofset = t[t.Count - 1];
 
-            foreach (var item in old)
+            foreach (KeyValuePair<int, double> item in old)
             {
                 double i = item.Key / duration;
-                var vec = t.TransformVector(r => item.Value * Sinc(i*(r+ofset)));
+                Vector vec = t.TransformVector(r => item.Value * Sinc(i*(r+ofset)));
                 result += vec;
             }
 
@@ -116,7 +113,9 @@ namespace PianoGen.Model
             {
                 int ind = vects[i].IndexMax();
                 if (vects[i][ind] > 1e-3)
+                {
                     max.Add(ind + index, vects[i][ind]);
+                }
             }
 
             return max;

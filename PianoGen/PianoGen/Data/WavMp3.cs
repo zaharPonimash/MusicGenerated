@@ -23,8 +23,8 @@ namespace PianoGen.Data
             using (WaveFileReader reader = new WaveFileReader(path))
             {
 
-                var outFormat = Resampler(reader);// to 8kHz
-                var semples = outFormat.ToSampleProvider().ToMono();
+                MediaFoundationResampler outFormat = Resampler(reader);// to 8kHz
+                ISampleProvider semples = outFormat.ToSampleProvider().ToMono();
                 Fd = semples.WaveFormat.SampleRate;
 
                 float[] fl = new float[Setting.BufferSize];
@@ -34,7 +34,9 @@ namespace PianoGen.Data
                     m = semples.Read(fl, 0, Setting.BufferSize);
 
                     for (int i = 0; i < Setting.BufferSize; i++)
+                    {
                         semplList.Add(fl[i]);
+                    }
                 }
                 while (m == Setting.BufferSize);
             }
@@ -50,8 +52,8 @@ namespace PianoGen.Data
 
             using (Mp3FileReader reader = new Mp3FileReader(path))
             {
-                var outFormat = Resampler(reader);// to 8kHz
-                var semples = outFormat.ToSampleProvider().ToMono();
+                MediaFoundationResampler outFormat = Resampler(reader);// to 8kHz
+                ISampleProvider semples = outFormat.ToSampleProvider().ToMono();
                 Fd = semples.WaveFormat.SampleRate;
 
                 float[] fl = new float[Setting.BufferSize];
@@ -61,7 +63,9 @@ namespace PianoGen.Data
                     m = semples.Read(fl, 0, Setting.BufferSize);
 
                     for (int i = 0; i < Setting.BufferSize; i++)
+                    {
                         semplList.Add(fl[i]);
+                    }
                 }
                 while (m == Setting.BufferSize);
             }
@@ -95,12 +99,10 @@ namespace PianoGen.Data
             }
         }
 
-
-
-        MediaFoundationResampler Resampler(IWaveProvider reader, int newFreq = 8000)
+        private MediaFoundationResampler Resampler(IWaveProvider reader, int newFreq = 8000)
         {
-            var outFormat = new WaveFormat(newFreq, reader.WaveFormat.Channels);
-            var resampler = new MediaFoundationResampler(reader, outFormat);
+            WaveFormat outFormat = new WaveFormat(newFreq, reader.WaveFormat.Channels);
+            MediaFoundationResampler resampler = new MediaFoundationResampler(reader, outFormat);
             return resampler;
         }
 
@@ -115,12 +117,13 @@ namespace PianoGen.Data
         public class CastomWavFormat : IWaveProvider, IDisposable
         {
             public WaveFormat WaveFormat { get; private set; }
-            MemoryStream stream;
+
+            private readonly MemoryStream stream;
 
             public CastomWavFormat(Vector vector, int fd)
             {
                 WaveFormat = new WaveFormat(fd, 32, 1);
-                var data = new byte[vector.Count * 4];
+                byte[] data = new byte[vector.Count * 4];
 
 
                 for (int i = 0, k = 0; i < vector.Count; i++)
